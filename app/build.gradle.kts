@@ -48,6 +48,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("org.java-websocket:Java-WebSocket:1.5.1")
     implementation("com.google.vr:sdk-audio:1.80.0")
     implementation(project(":OpenCV"))
     testImplementation("junit:junit:4.13.2")
