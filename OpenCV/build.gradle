@@ -70,7 +70,7 @@
 //       externalNativeBuild {
 //           cmake {
 //               cppFlags "-std=c++11 -frtti -fexceptions"
-//               arguments "-DOpenCV_DIR=" + opencvsdk + "/sdk/native/jni" // , "-DANDROID_ARM_NEON=TRUE"
+//               arguments "-DOpenCV_DIR=" + opencvsdk + "/OpenCV/native/jni" // , "-DANDROID_ARM_NEON=TRUE"
 //           }
 //       }
 //   }

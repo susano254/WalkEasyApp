@@ -34,7 +34,10 @@ add_library(c++ SHARED IMPORTED)
 set_target_properties(c++ PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/${ANDROID_ABI}/libc++.so)
 
 
-set(OpenCV_DIR /home/mahmoud/OpenCV/Build/OpenCV-android-sdk/sdk/native/jni/)
+set(Root_Dir "${PROJECT_SOURCE_DIR}/../../../../")
+set(OpenCV_DIR ${Root_Dir}/OpenCV/native/jni)
+#set(OpenCV_DIR /home/mahmoud/OpenCV/Build/OpenCV-android-sdk/sdk/native/jni/)
+
 # Add the OpenCV package with Java support
 find_package(OpenCV 4.9 REQUIRED java)
 
