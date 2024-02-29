@@ -42,6 +42,7 @@ set(OpenCV_DIR ${Root_Dir}/OpenCV/native/jni)
 find_package(OpenCV 4.9 REQUIRED java)
 
 include_directories(${CMAKE_SOURCE_DIR}/include/)
+#message(SEND_ERROR "Hello")
 
 
 # Specifies libraries CMake should link to your target library. You

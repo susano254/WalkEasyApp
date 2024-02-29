@@ -38,6 +38,7 @@ public class MyWebSocketServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
         super.onMessage(conn, message);
+        Log.d("MyServer", "Connection Path is: " + conn.getResourceDescriptor());
         Log.d("MyServer", "Received message from " + conn.getRemoteSocketAddress() + " message length: " + message.capacity());
 
         callBack.render(message);
