@@ -51,7 +51,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     ${OpenCV_LIBRARIES}
 )
 
-
 #target_link_libraries(${CMAKE_PROJECT_NAME}
 #        # List libraries linked to the target library
 #        android

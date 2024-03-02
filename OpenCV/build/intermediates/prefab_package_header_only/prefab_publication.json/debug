@@ -1,5 +1,5 @@
 {
-  "installationFolder": "/home/mahmoud/AndroidStudioProjects/WalkEasyApp/OpenCV/build/intermediates/prefab_package/debug/prefab",
+  "installationFolder": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\build\\intermediates\\prefab_package\\debug\\prefab",
   "gradlePath": ":OpenCV",
   "packageInfo": {
     "packageName": "OpenCV",
@@ -8,7 +8,7 @@
     "modules": [
       {
         "moduleName": "opencv_jni_shared",
-        "moduleHeaders": "/home/mahmoud/AndroidStudioProjects/WalkEasyApp/OpenCV/native/jni/include",
+        "moduleHeaders": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\native\\jni\\include",
         "moduleExportLibraries": [],
         "abis": []
       }
