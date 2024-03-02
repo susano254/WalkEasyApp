@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,6 +16,8 @@ import com.susano.WalkEasy.databinding.ActivityMainBinding;
 
 import org.opencv.android.OpenCVLoader;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         imageViewLeft = findViewById(R.id.textureView1);
 
         // Comment this two lines if you can't connect the hardware
@@ -90,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .start();
-
         stringFromJNI();
     }
 

@@ -27,11 +27,7 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 )
 
 add_library(OpenCL SHARED IMPORTED)
-set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/${ANDROID_ABI}/libGLES_mali.so)
-add_library(ion_exynos SHARED IMPORTED)
-set_target_properties(ion_exynos PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/${ANDROID_ABI}/libion_exynos.so)
-add_library(c++ SHARED IMPORTED)
-set_target_properties(c++ PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/lib/${ANDROID_ABI}/libc++.so)
+set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libGLES_mali.so)
 
 
 set(Root_Dir "${PROJECT_SOURCE_DIR}/../../../../")
@@ -42,7 +38,6 @@ set(OpenCV_DIR ${Root_Dir}/OpenCV/native/jni)
 find_package(OpenCV 4.9 REQUIRED java)
 
 include_directories(${CMAKE_SOURCE_DIR}/include/)
-#message(SEND_ERROR "Hello")
 
 
 # Specifies libraries CMake should link to your target library. You
@@ -52,8 +47,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     # List libraries link to the target library
     android
     log
-    c++
-    ion_exynos
     OpenCL
     ${OpenCV_LIBRARIES}
 )
