@@ -4,5 +4,5 @@ import java.nio.ByteBuffer;
 
 // Define a callback interface
 public interface RenderFrame {
-    void render(ByteBuffer frame);
+    void render(ByteBuffer frame, String descriptor);
 }

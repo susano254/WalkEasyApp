@@ -23,7 +23,8 @@ import java.nio.ByteBuffer;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
-    ImageView imageViewLeft, textureViewRight;
+
+    ImageView imageViewLeft, imageViewRight,textureViewRight;
     MyWebSocketServer webSocketServer;
     private static final String SOUND_FILE = "audio/HelloVR_Loop.ogg";
 
@@ -35,14 +36,15 @@ public class MainActivity extends AppCompatActivity {
 
     RenderFrame callBack = new RenderFrame() {
         @Override
-        public void render(ByteBuffer frame) {
+        public void render(ByteBuffer frame , String descriptor) {
 
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     byte[] jpegData = frame.array();
                     Bitmap bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
-                    Log.d("MyServer", " message width: " + bitmap.getWidth()  + " message height: " + bitmap.getHeight());
+                    Log.d("MyServer", " message width: " + bitmap.getWidth()  +
+                            " message height: " + bitmap.getHeight());
                     imageViewLeft.setImageBitmap(bitmap);
                 }
             });
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         imageViewLeft = findViewById(R.id.textureView1);
+        imageViewRight = new ImageView(this);
 
         // Comment this two lines if you can't connect the hardware
         // Create and start the WebSocket server on a specific port
