@@ -12,5 +12,6 @@ public class RenderFrameImplementation implements RenderFrame {
     @Override
     public void render(ByteBuffer frame, String descriptor) {
 
+
     }
 }
