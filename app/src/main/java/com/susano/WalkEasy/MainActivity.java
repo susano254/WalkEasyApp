@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.vr.sdk.audio.GvrAudioEngine;
 import com.susano.WalkEasy.ESP_Cam.MyWebSocketServer;
 import com.susano.WalkEasy.ESP_Cam.RenderFrame;
+import com.susano.WalkEasy.ESP_Cam.RenderFrameImplementation;
 import com.susano.WalkEasy.ESP_Cam.cameraView;
 import com.susano.WalkEasy.databinding.ActivityMainBinding;
 
@@ -23,9 +24,9 @@ import java.nio.ByteBuffer;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
-
     ImageView imageViewLeft, imageViewRight;
-    cameraView leftCamera, rightCamera;
+
+
     MyWebSocketServer webSocketServer;
     private static final String SOUND_FILE = "audio/HelloVR_Loop.ogg";
 
@@ -35,27 +36,9 @@ public class MainActivity extends AppCompatActivity {
         System.loadLibrary("opencv_java4");
     }
 
-    RenderFrame callBack = new RenderFrame() {
-        @Override
-        public void render(ByteBuffer frame , String descriptor) {
+    RenderFrameImplementation callBack = new RenderFrameImplementation();
 
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    byte[] jpegData = frame.array();
-                    Bitmap bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
-                    Log.d("MyServer", " message width: " + bitmap.getWidth() +
-                            " message height: " + bitmap.getHeight());
 
-                    if (leftCamera.which_camera()){
-                        imageViewLeft.setImageBitmap(bitmap);
-                    }else {   imageViewRight.setImageBitmap(bitmap);}
-
-                }
-            });
-
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -12,12 +12,36 @@
         "moduleExportLibraries": [],
         "abis": [
           {
+            "abiName": "armeabi-v7a",
+            "abiApi": 24,
+            "abiNdkMajor": 25,
+            "abiStl": "c++_shared",
+            "abiLibrary": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\.cxx\\Debug\\462g1z24\\armeabi-v7a\\libopencv_jni_shared.a",
+            "abiAndroidGradleBuildJsonFile": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\.cxx\\Debug\\462g1z24\\armeabi-v7a\\android_gradle_build.json"
+          },
+          {
             "abiName": "arm64-v8a",
             "abiApi": 24,
             "abiNdkMajor": 25,
             "abiStl": "c++_shared",
             "abiLibrary": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\.cxx\\Debug\\462g1z24\\arm64-v8a\\libopencv_jni_shared.a",
             "abiAndroidGradleBuildJsonFile": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\.cxx\\Debug\\462g1z24\\arm64-v8a\\android_gradle_build.json"
+          },
+          {
+            "abiName": "x86",
+            "abiApi": 24,
+            "abiNdkMajor": 25,
+            "abiStl": "c++_shared",
+            "abiLibrary": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\.cxx\\Debug\\462g1z24\\x86\\libopencv_jni_shared.a",
+            "abiAndroidGradleBuildJsonFile": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\.cxx\\Debug\\462g1z24\\x86\\android_gradle_build.json"
+          },
+          {
+            "abiName": "x86_64",
+            "abiApi": 24,
+            "abiNdkMajor": 25,
+            "abiStl": "c++_shared",
+            "abiLibrary": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\.cxx\\Debug\\462g1z24\\x86_64\\libopencv_jni_shared.a",
+            "abiAndroidGradleBuildJsonFile": "C:\\Users\\noran\\AndroidStudioProjects\\WalkEasyApp\\OpenCV\\.cxx\\Debug\\462g1z24\\x86_64\\android_gradle_build.json"
           }
         ]
       }
