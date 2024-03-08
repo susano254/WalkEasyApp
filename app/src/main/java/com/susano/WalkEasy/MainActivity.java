@@ -1,7 +1,7 @@
 package com.susano.WalkEasy;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+//import android.graphics.Bitmap;
+//import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;
@@ -11,19 +11,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.vr.sdk.audio.GvrAudioEngine;
 import com.susano.WalkEasy.ESP_Cam.MyWebSocketServer;
-import com.susano.WalkEasy.ESP_Cam.RenderFrame;
+//import com.susano.WalkEasy.ESP_Cam.RenderFrame;
 import com.susano.WalkEasy.ESP_Cam.RenderFrameImplementation;
-import com.susano.WalkEasy.ESP_Cam.cameraView;
+//import com.susano.WalkEasy.ESP_Cam.cameraView;
 import com.susano.WalkEasy.databinding.ActivityMainBinding;
 
 import org.opencv.android.OpenCVLoader;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
+//import java.nio.ByteBuffer;
 
 
 public class MainActivity extends AppCompatActivity {
-    private ActivityMainBinding binding;
     ImageView imageViewLeft, imageViewRight;
 
 
@@ -44,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        com.susano.WalkEasy.databinding.ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
