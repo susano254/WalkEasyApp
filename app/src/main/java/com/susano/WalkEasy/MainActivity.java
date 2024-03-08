@@ -1,7 +1,7 @@
 package com.susano.WalkEasy;
 
-//import android.graphics.Bitmap;
-//import android.graphics.BitmapFactory;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.WindowManager;

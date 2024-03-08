@@ -7,10 +7,13 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
+import org.java_websocket.WebSocket;
+
 import java.nio.ByteBuffer;
 
 public class RenderFrameImplementation implements RenderFrame {
-    String descriptor;
+
+
     ImageView imageViewLeft, imageViewRight;
     cameraView leftCamera, rightCamera;
 
@@ -26,7 +29,7 @@ public class RenderFrameImplementation implements RenderFrame {
                     Log.d("MyServer", " message width: " + bitmap.getWidth() +
                             " message height: " + bitmap.getHeight());
 
-                    if (leftCamera.which_camera()){
+                    if (leftCamera.which_camera(descriptor)){
                         imageViewLeft.setImageBitmap(bitmap);
                     }else {   imageViewRight.setImageBitmap(bitmap);}
 
@@ -34,7 +37,6 @@ public class RenderFrameImplementation implements RenderFrame {
             });
 
         }
-
 
     }
 }

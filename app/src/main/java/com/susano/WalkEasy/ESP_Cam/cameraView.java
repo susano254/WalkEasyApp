@@ -7,13 +7,14 @@ import java.util.Objects;
 
 
 public class cameraView {
-    WebSocket conn ;
-//    public void camera(){}
-    public boolean which_camera(){
 
-        String descriptor = conn.getResourceDescriptor();
-        if (Objects.equals(descriptor, "Left")) return true;
-        else if (Objects.equals(descriptor, "Right")) return false;
+
+    public boolean which_camera(String descriptor){
+
+
+
+        if (Objects.equals(descriptor, "/left")) return true;
+        else if (Objects.equals(descriptor, "/right")) return false;
 
 
         return false;
