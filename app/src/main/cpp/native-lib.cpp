@@ -2,12 +2,10 @@
 #include <string>
 #include <android/log.h>
 #include <CL/cl.h>
-#include <CL/cl.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/core/ocl.hpp>
 #include <opencv2/calib3d.hpp>
 
-using namespace cl;
 using namespace cv;
 
 

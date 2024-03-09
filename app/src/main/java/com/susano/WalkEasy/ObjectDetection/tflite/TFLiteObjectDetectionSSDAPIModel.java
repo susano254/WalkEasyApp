@@ -15,6 +15,9 @@ limitations under the License.
 
 package com.susano.WalkEasy.ObjectDetection.tflite;
 
+import static org.tensorflow.lite.DataType.FLOAT32;
+import static org.tensorflow.lite.DataType.UINT8;
+
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -22,8 +25,7 @@ import android.graphics.RectF;
 import android.os.SystemClock;
 import android.util.Log;
 
-import com.p4f.esp32camai.MyConstants;
-
+import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.gpu.GpuDelegate;
 
@@ -172,7 +174,7 @@ public class TFLiteObjectDetectionSSDAPIModel extends Classifier {
 
   private float scoreThreshold;
 
-  MyConstants.MODEL_TYPE modelType = MyConstants.MODEL_TYPE.FLOAT32;
+  DataType modelType = FLOAT32;
 
   private List<Recognition> resultsSSD = new ArrayList<>();
   private List<Recognition> resultsSSDPre = new ArrayList<>();
@@ -287,7 +289,7 @@ public class TFLiteObjectDetectionSSDAPIModel extends Classifier {
       final String labelFilename,
       final int inputSize,
       final Device device,
-      final MyConstants.MODEL_TYPE modelType,
+      final DataType modelType,
       final float scoreThreshold,
       final int queueSize,
       final int width,
@@ -333,7 +335,7 @@ public class TFLiteObjectDetectionSSDAPIModel extends Classifier {
     }
 
     int numBytesPerChannelSSD = 4;
-    if (modelType == MyConstants.MODEL_TYPE.UINT8) {
+    if (modelType == UINT8) {
       // Pre-allocate buffers.
       numBytesPerChannelSSD = 1; // Floating point
     }
@@ -427,11 +429,11 @@ public class TFLiteObjectDetectionSSDAPIModel extends Classifier {
     for (int i = 0; i < inputSizeSSD; ++i) {
       for (int j = 0; j < inputSizeSSD; ++j) {
         int pixelValue = intValuesSSD[i * inputSizeSSD + j];
-        if (modelType== MyConstants.MODEL_TYPE.FLOAT32) {
+        if (modelType == FLOAT32) {
           imgDataSSD.putFloat((((pixelValue >> 16) & 0xFF) - IMAGE_MEAN_SSD) / IMAGE_STD_SSD);
           imgDataSSD.putFloat((((pixelValue >> 8) & 0xFF) - IMAGE_MEAN_SSD) / IMAGE_STD_SSD);
           imgDataSSD.putFloat(((pixelValue & 0xFF) - IMAGE_MEAN_SSD) / IMAGE_STD_SSD);
-        }else if(modelType== MyConstants.MODEL_TYPE.UINT8){
+        }else if(modelType == UINT8){
           // Quantized model
           imgDataSSD.put((byte) ((pixelValue >> 16) & 0xFF));
           imgDataSSD.put((byte) ((pixelValue >> 8) & 0xFF));

@@ -15,6 +15,8 @@ limitations under the License.
 
 package com.susano.WalkEasy.ObjectDetection.tflite;
 
+import static org.tensorflow.lite.DataType.FLOAT32;
+
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -23,6 +25,7 @@ import android.os.SystemClock;
 import android.os.Trace;
 import android.util.Log;
 
+import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.gpu.GpuDelegate;
 
@@ -203,7 +206,7 @@ public class TFLiteObjectDetectionAPIModel extends Classifier {
 
   private List<Recognition> resultsYolo = new ArrayList<>();
 
-  MyConstants.MODEL_TYPE modelType;
+  DataType modelType;
 
   private TFLiteObjectDetectionAPIModel() {}
 
@@ -221,7 +224,7 @@ public class TFLiteObjectDetectionAPIModel extends Classifier {
       final String labelFilename,
       final int inputSize,
       final Device device,
-      final MyConstants.MODEL_TYPE modelType,
+      final DataType modelType,
       final float scoreThreshold,
       final int queueSize,
       final int width,
@@ -369,7 +372,7 @@ public class TFLiteObjectDetectionAPIModel extends Classifier {
     for (int i = 0; i < inputSize; ++i) {
       for (int j = 0; j < inputSize; ++j) {
         int pixelValue = intValuesYolo[i * inputSize + j];
-          if (modelType== MyConstants.MODEL_TYPE.FLOAT32) {
+          if (modelType == FLOAT32) {
               imgDataYolo.putFloat((float) (pixelValue & 0xFF) / IMAGE_STD);
               imgDataYolo.putFloat((float) ((pixelValue >> 8) & 0xFF) / IMAGE_STD);
               imgDataYolo.putFloat((float) ((pixelValue >> 16) & 0xFF) / IMAGE_STD);

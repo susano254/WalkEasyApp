@@ -1,5 +1,8 @@
 package com.susano.WalkEasy.ObjectDetection.tflite;
 
+import static org.tensorflow.lite.DataType.FLOAT32;
+import static org.tensorflow.lite.DataType.UINT8;
+
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -7,8 +10,7 @@ import android.os.SystemClock;
 import android.os.Trace;
 import android.util.Log;
 
-import com.p4f.esp32camai.MyConstants;
-
+import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.gpu.GpuDelegate;
 
@@ -83,7 +85,7 @@ public class TFLiteSegmentationAPIModel extends Classifier{
 
     final float SEG_THRESH = 0.0f;
 
-    MyConstants.MODEL_TYPE modelTypeSeg = MyConstants.MODEL_TYPE.FLOAT32;
+    DataType modelTypeSeg = FLOAT32;
 
     private Segmentation resultSegmentation;
 
@@ -142,7 +144,7 @@ public class TFLiteSegmentationAPIModel extends Classifier{
             final String modelFilenameSeg,
             final int[] inputSizeSeg,
             final TFLiteSegmentationAPIModel.Device deviceSeg,
-            final MyConstants.MODEL_TYPE modelTypeSeg,
+            final DataType modelTypeSeg,
             final int queueSize,
             final int height,
             final int width
@@ -212,7 +214,7 @@ public class TFLiteSegmentationAPIModel extends Classifier{
     /**
      * Get object results from network
      *
-     * @param results store the result.
+     * @param result store the result.
      *
      * @return true(result is ready for reading)/false(result not ready for reading)
      */
@@ -261,12 +263,12 @@ public class TFLiteSegmentationAPIModel extends Classifier{
         for (int i = 0; i < inputSizeSeg[1]; ++i) {
             for (int j = 0; j < inputSizeSeg[0]; ++j) {
                 int pixelValue = intValuesSeg[i * inputSizeSeg[0] + j];
-                if (modelTypeSeg == MyConstants.MODEL_TYPE.UINT8) {
+                if (modelTypeSeg == UINT8) {
                     // Quantized model
                     imgDataSeg.put((byte) (pixelValue & 0xFF));
                     imgDataSeg.put((byte) ((pixelValue >> 8) & 0xFF));
                     imgDataSeg.put((byte) ((pixelValue >> 16) & 0xFF));
-                } else if (modelTypeSeg == MyConstants.MODEL_TYPE.FLOAT32) { // Float model
+                } else if (modelTypeSeg == FLOAT32) { // Float model
                     imgDataSeg.putFloat((float)(pixelValue & 0xFF) / IMAGE_STD);
                     imgDataSeg.putFloat((float)((pixelValue >> 8) & 0xFF) / IMAGE_STD);
                     imgDataSeg.putFloat((float)((pixelValue >> 16) & 0xFF)/ IMAGE_STD);
@@ -285,7 +287,7 @@ public class TFLiteSegmentationAPIModel extends Classifier{
 
         // Run the inference call.
         Trace.beginSection("run");
-        if(modelTypeSeg == MyConstants.MODEL_TYPE.UINT8){
+        if(modelTypeSeg == UINT8){
             tfLiteSeg.run(imgDataSeg, outputSegByteArr);
         }else{
             tfLiteSeg.run(imgDataSeg, outputSeg);
@@ -299,7 +301,7 @@ public class TFLiteSegmentationAPIModel extends Classifier{
 
         for (int i = 0; i < inputSizeSeg[1]; ++i) {
             for (int j = 0; j < inputSizeSeg[0]; ++j) {
-                if(modelTypeSeg == MyConstants.MODEL_TYPE.UINT8) {
+                if(modelTypeSeg == UINT8) {
                     if (outputSegByteArr[0][i][j][0] > SEG_THRESH) {
 //            Log.d("debug i j", ": " + i + " " + j);
                         outputSegProcessed[i * inputSizeSeg[0] * 4 + j * 4] = (byte) 0;
