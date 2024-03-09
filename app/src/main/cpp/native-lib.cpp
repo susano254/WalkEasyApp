@@ -1,12 +1,15 @@
 #include <jni.h>
 #include <string>
 #include <android/log.h>
-#include "CL/cl.h"
+#include <CL/cl.h>
+#include <CL/cl.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/core/ocl.hpp>
 #include <opencv2/calib3d.hpp>
 
+using namespace cl;
 using namespace cv;
+
 
 void test(){
     cl_int CL_err = CL_SUCCESS;
@@ -21,22 +24,29 @@ void test(){
             clGetPlatformIDs(numPlatforms, platforms, NULL);
 
             for (cl_uint i = 0; i < numPlatforms; ++i) {
-                size_t platformNameSize;
+                std::size_t platformNameSize;
                 clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, 0, NULL, &platformNameSize);
 
                 char* platformName = new char[platformNameSize];
                 clGetPlatformInfo(platforms[i], CL_PLATFORM_NAME, platformNameSize, platformName, NULL);
 
-                size_t vendorSize;
+                std::size_t vendorSize;
                 clGetPlatformInfo(platforms[i], CL_PLATFORM_VENDOR, 0, NULL, &vendorSize);
 
                 char* vendor = new char[vendorSize];
                 clGetPlatformInfo(platforms[i], CL_PLATFORM_VENDOR, vendorSize, vendor, NULL);
 
+                std::size_t versionSize;
+                clGetPlatformInfo(platforms[i], CL_PLATFORM_VERSION, 0, NULL, &versionSize);
+
+                char* version = new char[versionSize];
+                clGetPlatformInfo(platforms[i], CL_PLATFORM_VERSION, versionSize, version, NULL);
+
                 // Print information about each platform using Android logging
                 __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "Platform %u:", i);
                 __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "  Name: %s", platformName);
                 __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "  Vendor: %s", vendor);
+                __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "  Version: %s", version);
 
                 cl_uint numDevices = 0;
                 clGetDeviceIDs(platforms[i], CL_DEVICE_TYPE_ALL, 0, NULL, &numDevices);

@@ -30,6 +30,7 @@ add_library(OpenCL SHARED IMPORTED)
 set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libGLES_mali.so)
 
 
+
 set(Root_Dir "${PROJECT_SOURCE_DIR}/../../../../")
 set(OpenCV_DIR ${Root_Dir}/OpenCV/native/jni)
 #set(OpenCV_DIR /home/mahmoud/OpenCV/Build/OpenCV-android-sdk/sdk/native/jni/)
@@ -56,6 +57,4 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 #        # List libraries linked to the target library
 #        android
 #        log
-#        ${LIBRARIES_TO_IMPORT}
-#        ${OpenCV_LIBRARIES}
 #    )
