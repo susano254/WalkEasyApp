@@ -41,7 +41,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
+// messange
 public class TFLiteObjectDetectionSSDAPIModel extends Classifier {
 
   final static String TAG = "TFLiteObjectDetectionSSDAPIModel";
