@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.AaptOptions
+
 plugins {
     id("com.android.application")
 }
@@ -33,6 +35,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+    androidResources{
+        noCompress += "tflite"
+        noCompress += "lite"
+    }
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
@@ -50,6 +56,8 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("org.java-websocket:Java-WebSocket:1.5.1")
     implementation("com.google.vr:sdk-audio:1.80.0")
+    implementation("org.tensorflow:tensorflow-lite:0.0.0-nightly")
+    implementation("org.tensorflow:tensorflow-lite-gpu:0.0.0-nightly")
     implementation(project(":OpenCV"))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

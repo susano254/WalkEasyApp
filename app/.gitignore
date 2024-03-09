@@ -1,1 +1,3 @@
 /build
+src/main/jniLibs/arm64-v8a
+src/main/jniLibs/armeabi-v7a

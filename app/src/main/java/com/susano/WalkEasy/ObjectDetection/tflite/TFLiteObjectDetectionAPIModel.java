@@ -23,8 +23,6 @@ import android.os.SystemClock;
 import android.os.Trace;
 import android.util.Log;
 
-import com.p4f.esp32camai.MyConstants;
-
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.gpu.GpuDelegate;
 
