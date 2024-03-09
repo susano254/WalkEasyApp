@@ -26,8 +26,18 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
     native-lib.cpp
 )
 
+
 add_library(OpenCL SHARED IMPORTED)
-set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libGLES_mali.so)
+
+if (EXISTS ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libGLES_mali.so)
+    set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libGLES_mali.so)
+elseif (EXISTS ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libOpenCL.so)
+    set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libOpenCL.so)
+elseif (EXISTS ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libPVROCL.so)
+    set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libPVROCL.so)
+else()
+    message(FATAL_ERROR "None of the required OpenCL libraries found.")
+endif()
 
 
 

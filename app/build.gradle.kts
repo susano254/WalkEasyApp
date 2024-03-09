@@ -18,6 +18,11 @@ android {
             abiFilters.add("armeabi-v7a")
             abiFilters.add("arm64-v8a")
         }
+        externalNativeBuild {
+            cmake {
+                cppFlags.add("-fuse-ld=lld")
+            }
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,6 +44,7 @@ android {
         noCompress += "tflite"
         noCompress += "lite"
     }
+    // how to add cpp flags to the build
     externalNativeBuild {
         cmake {
             path = file("src/main/cpp/CMakeLists.txt")
