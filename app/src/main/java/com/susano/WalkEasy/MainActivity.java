@@ -16,15 +16,17 @@ import com.susano.WalkEasy.databinding.ActivityMainBinding;
 
 import org.opencv.android.OpenCVLoader;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+
+import com.susano.WalkEasy.ObjectDetection.main.object_main;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     ImageView imageViewLeft, textureViewRight;
     MyWebSocketServer webSocketServer;
+    object_main object_main;
+
     private static final String SOUND_FILE = "audio/HelloVR_Loop.ogg";
 
     // Used to load the 'opencl' library on application startup.
@@ -65,6 +67,8 @@ public class MainActivity extends AppCompatActivity {
         webSocketServer = new MyWebSocketServer(new InetSocketAddress(8000), callBack);
         webSocketServer.start();
 
+        object_main = new object_main();
+
         if(OpenCVLoader.initDebug()){
             Log.d("Loaded", "Success");
         }
@@ -94,6 +98,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 })
                 .start();
+
+        new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // Preload the sound file
+                        object_main.ObjectDetection();
+                    }
+                })
+                .start();
+
         stringFromJNI();
     }
 
