@@ -20,7 +20,7 @@ android {
         }
         externalNativeBuild {
             cmake {
-                cppFlags.add("-fuse-ld=lld")
+                // cppFlags.add("-fuse-ld=lld")
             }
         }
 

@@ -1,12 +1,42 @@
 #include <jni.h>
 #include <string>
 #include <android/log.h>
+#include <android/asset_manager.h>
 #include <CL/cl.h>
 #include <opencv2/core.hpp>
 #include <opencv2/core/ocl.hpp>
 #include <opencv2/calib3d.hpp>
+#include <unistd.h>
+#include <pthread.h>
+#include <AL/al.h>
+#include "AL/alc.h"
 
 using namespace cv;
+
+float x = 20.0f;
+float y = 20.0f;
+float z = 20.0f;
+ALuint sourceId;
+
+void* temp(void *arg){
+    for(int i = 0; i < 1000; i++){
+        y -= 0.03f;
+        alSource3f(sourceId, AL_POSITION, 0, y, 0);
+        usleep(10000);
+    }
+}
+
+// syntheize a sine wave at the given frequency and sample rate
+void generateTone(int16_t* data, int size, float frequency, int sampleRate) {
+    float inc_freq = 0.0f;
+    for (int i = 0; i < size; i++) {
+        data[i] = (int16_t)(32767.0 * sin(2 * M_PI * frequency * i / sampleRate));
+        frequency += inc_freq;
+
+        if(frequency < 100 || frequency > 5000)
+            inc_freq = -inc_freq;
+    }
+}
 
 
 void test(){
@@ -39,6 +69,7 @@ void test(){
 
                 char* version = new char[versionSize];
                 clGetPlatformInfo(platforms[i], CL_PLATFORM_VERSION, versionSize, version, NULL);
+
 
                 // Print information about each platform using Android logging
                 __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "Platform %u:", i);
@@ -87,14 +118,48 @@ void test(){
         __android_log_print(ANDROID_LOG_ERROR, "YourTag", "clGetPlatformIDs(%i)", CL_err);
 }
 
-//void firstKernel(){
-//    clGetDeviceIDs()
-//
-//}
-
 extern "C" JNIEXPORT jstring
-JNICALL
-Java_com_susano_WalkEasy_MainActivity_stringFromJNI( JNIEnv *env, jobject /* this */) {
+Java_com_susano_WalkEasy_MainActivity_init( JNIEnv *env, jobject /* this */) {
+    // Initialize OpenAL context
+    ALCdevice *device = alcOpenDevice(NULL);
+    if (!device) {
+        __android_log_print(ANDROID_LOG_INFO, "OpenALPlatformInfo", "Failed to open default device");
+    }
+
+    ALCcontext *alContext = alcCreateContext(device, NULL);
+    alcMakeContextCurrent(alContext);
+    // Check for errors
+    ALenum error = alGetError();
+    if (error != AL_NO_ERROR) {
+        __android_log_print(ANDROID_LOG_INFO, "OpenALPlatformInfo", "OpenAL error: %d", error);
+    }
+    else {
+        __android_log_print(ANDROID_LOG_INFO, "OpenALPlatformInfo", "OpenAL initialized successfully");
+    }
+    ALuint buffer;
+    alGenBuffers(1, &buffer);
+    int seconds = 1;
+    int sampleRate = 44100;
+    size_t size = seconds * sampleRate * sizeof(int16_t);
+    int16_t* data = new int16_t[size];
+    generateTone(data, size, 4000, sampleRate);
+    alBufferData(buffer, AL_FORMAT_MONO16, data, size, sampleRate);
+    alListener3f(AL_POSITION, 0, 0, 0);
+    alListener3f(AL_VELOCITY, 0, 0, 0);
+    alGenSources(1, &sourceId);
+    alSourcef(sourceId, AL_GAIN, 1);
+    alSourcef(sourceId, AL_PITCH, 1);
+    // set the direction to be totally on the left
+    alSource3f(sourceId, AL_POSITION, 0, y, 0);
+    alSource3f(sourceId, AL_VELOCITY, 0, 0, 0);
+    alSourcei(sourceId, AL_BUFFER, buffer);
+    alSourcei(sourceId, AL_LOOPING, AL_TRUE);
+    alSourcePlay(sourceId);
+    // execute this in separate thread
+
+    pthread_t thread;
+    pthread_create(&thread, NULL, temp, NULL);
+
     test();
     if(ocl::haveOpenCL() && ocl::useOpenCL() ){
         __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "OpenCV Loaded with OpenCL support Successfully");
@@ -124,3 +189,15 @@ Java_com_susano_WalkEasy_MainActivity_stringFromJNI( JNIEnv *env, jobject /* thi
     return env->NewStringUTF(hello.c_str());
 }
 
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_susano_WalkEasy_ESP_1Cam_RenderFrame_updateImage(JNIEnv *env, jobject thiz, jlong mat_addr,
+                                                          jstring path) {
+    // TODO: implement updateImage()
+    Mat img = *(Mat*)mat_addr;
+    const char *nativeString = env->GetStringUTFChars(path, 0);
+    __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "rows: %d", img.rows);
+    __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "path: %s", nativeString);
+
+}

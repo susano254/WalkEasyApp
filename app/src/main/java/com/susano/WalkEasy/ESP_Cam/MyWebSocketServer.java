@@ -10,13 +10,13 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
 public class MyWebSocketServer extends WebSocketServer {
-    RenderFrame callBack;
+    RenderFrameInterface callBack;
+    public Camera leftCamera, rightCamera;
 
-    public MyWebSocketServer(InetSocketAddress address, RenderFrame callBack) {
+    public MyWebSocketServer(InetSocketAddress address, RenderFrameInterface callBack) {
         super(address);
         this.callBack = callBack;
     }
-
 
     @Override
     public void onStart() {
@@ -26,6 +26,16 @@ public class MyWebSocketServer extends WebSocketServer {
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         // Handle a new connection
         Log.d("MyServer", "New connection: " + conn.getRemoteSocketAddress());
+        Log.d("MyServer", "Path: " + conn.getResourceDescriptor());
+
+        if(conn.getResourceDescriptor().equals("/Left")){
+            leftCamera = new Camera(new InetSocketAddress(conn.getRemoteSocketAddress().getAddress(), conn.getRemoteSocketAddress().getPort()));
+            leftCamera.isConnected = true;
+        }
+        else if(conn.getResourceDescriptor().equals("/Right")){
+            rightCamera = new Camera(new InetSocketAddress(conn.getRemoteSocketAddress().getAddress(), conn.getRemoteSocketAddress().getPort()));
+            rightCamera.isConnected = true;
+        }
     }
 
     @Override
@@ -34,14 +44,13 @@ public class MyWebSocketServer extends WebSocketServer {
         Log.d("MyServer", "Connection closed: " + conn.getRemoteSocketAddress());
     }
 
-
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
         super.onMessage(conn, message);
-        Log.d("MyServer", "Connection Path is: " + conn.getResourceDescriptor());
+        Log.d("MyServer", "\n\nConnection Path is: " + conn.getResourceDescriptor());
         Log.d("MyServer", "Received message from " + conn.getRemoteSocketAddress() + " message length: " + message.capacity());
 
-        callBack.render(message);
+        callBack.render(message, conn.getResourceDescriptor());
     }
 
     @Override
@@ -52,8 +61,7 @@ public class MyWebSocketServer extends WebSocketServer {
 
     @Override
     public void onError(WebSocket conn, Exception ex) {
-        // Handle errors
-        Log.d("MyServer", "Error on connection " + conn.getRemoteSocketAddress() + ":");
         ex.printStackTrace();
     }
+
 }
