@@ -194,7 +194,6 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_susano_WalkEasy_ESP_1Cam_RenderFrame_updateImage(JNIEnv *env, jobject thiz, jlong mat_addr,
                                                           jstring path) {
-    // TODO: implement updateImage()
     Mat img = *(Mat*)mat_addr;
     const char *nativeString = env->GetStringUTFChars(path, 0);
     __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "rows: %d", img.rows);
