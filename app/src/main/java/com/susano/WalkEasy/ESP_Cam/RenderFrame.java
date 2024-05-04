@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.widget.ImageView;
 
+import com.susano.WalkEasy.ObjectDetection.tflite.TFLiteYoloV5;
+
 import org.java_websocket.WebSocket;
 import org.opencv.android.Utils;
 import org.opencv.core.Mat;
@@ -15,10 +17,12 @@ import java.nio.ByteBuffer;
 
 public class RenderFrame implements RenderFrameInterface {
     Activity context;
+    TFLiteYoloV5 detector;
     ImageView imageViewLeft, imageViewRight;
 
-    public RenderFrame(Activity context, ImageView imageViewLeft, ImageView imageViewRight){
+    public RenderFrame(Activity context, ImageView imageViewLeft, ImageView imageViewRight, TFLiteYoloV5 detector){
         this.context = context;
+        this.detector = detector;
         this.imageViewLeft = imageViewLeft;
         this.imageViewRight = imageViewRight;
     }
@@ -27,16 +31,23 @@ public class RenderFrame implements RenderFrameInterface {
         context.runOnUiThread(() -> {
             byte[] jpegData = frame.array();
             Bitmap bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
+
+            // for the openCL processing in the C++ code
             Mat mat = new Mat();
             mat.getNativeObjAddr();
             Utils.bitmapToMat(bitmap, mat);
             updateImage(mat.getNativeObjAddr(), path);
+
             Log.d("MyServer", " message width: " + bitmap.getWidth()  + " message height: " + bitmap.getHeight());
 
-            if(path.equals("/Left"))
+            // display and apply object detection if needed on both the left and right images
+            if(path.equals("/Left")) {
+                detector.recognizeImage(bitmap);
                 imageViewLeft.setImageBitmap(bitmap);
-            else if(path.equals("/Right"))
+            }
+            else if(path.equals("/Right")) {
                 imageViewRight.setImageBitmap(bitmap);
+            }
         });
     }
 

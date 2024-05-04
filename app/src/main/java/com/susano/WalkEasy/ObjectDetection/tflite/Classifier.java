@@ -15,149 +15,170 @@ limitations under the License.
 
 package com.susano.WalkEasy.ObjectDetection.tflite;
 
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
 /** Generic interface for interacting with different recognition engines. */
 public class Classifier implements Runnable {
+    List<String> labels;
+    /** The runtime device type used for executing classification. */
+    public enum Device {
+        CPU,
+        NNAPI,
+        GPU
+    };
 
-  /** The runtime device type used for executing classification. */
-  public enum Device {
-    CPU,
-    NNAPI,
-    GPU
-  };
-
-  @Override
-  public void run(){
-    Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
-    Bitmap bmp = Bitmap.createBitmap(width, height, conf); // this creates a MUTABLE bitmap
-    try{
-
-      while(!isStop()){
-        if(getBitmap(bmp)){
-          processing(bmp);
-          IsProcessing = false;
+    @Override
+    public void run(){
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        Bitmap bmp = Bitmap.createBitmap(width, height, conf); // this creates a MUTABLE bitmap
+        try{
+            while(!isStop()){
+                if(getBitmap(bmp)){
+                    processing(bmp);
+                    IsProcessing = false;
+                }
+            }
+        } catch(Exception e){
+            System.out.println(e);
         }
-      }
-
-    }catch(Exception e){
-      System.out.println(e);
     }
-  }
 
-  void enableStatLogging(final boolean debug){
-
-  }
-
-  String getStatString(){
-    return "";
-  }
-
-  void close(){
-
-  }
-
-  public void setNumThreads(int num_threads){
-
-  }
-
-  public void setUseNNAPI(boolean isChecked){
-
-  }
-
-  /**
-   * Add bitmap to queue, to be used for cnn inference
-   *
-   * @param bmp The bitmap to be add to queue.
-   */
-  public void setBitmap(Bitmap bmp){
-    synchronized (bmpQueue){
-      IsProcessing = true;
-      bmpQueue.add(bmp);
-    }
-  }
-
-  /**
-   * Get bitmap from queue
-   *
-   * @param bmp The bitmap to be taken from queue.
-   */
-  protected boolean getBitmap(Bitmap bmp){
-    boolean ret = false;
-    synchronized (bmpQueue) {
-      if(bmpQueue.size()>0) {
-        Bitmap tmp = bmpQueue.poll();
-        int[] pixels = new int[tmp.getWidth() * tmp.getHeight()];
-        tmp.getPixels(pixels, 0, tmp.getWidth(), 0, 0, tmp.getWidth(), tmp.getHeight());
-        bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
-        ret = true;
-      }else{
-        ret = false;
-      }
-    }
-    return ret;
-  }
-
-  /**
-   * Request stop worker thread
-   */
-  public void requestStop(){
-    synchronized(isRequestStop){
-      isRequestStop = true;
-    }
-  }
-
-  /**
-   * Check if worker was request to be stopped
-   */
-  public Boolean isStop(){
-    boolean ret;
-    synchronized(isRequestStop) {
-      ret = isRequestStop;
-    }
-    return ret;
-  }
-
-  /**
-   * Start object detection thread
-   */
-  public void startThread(){
-    threadDectection.start();
-  }
-
-  /**
-   * Wait for thread exit
-   */
-  public void waitForExit(){
-    try {
-      threadDectection.join();
-    } catch (InterruptedException e){
+    void enableStatLogging(final boolean debug){
 
     }
-  }
 
-  /**
-   * processing the bitmap
-   *
-   * @param bmp The bitmap to be taken for processing.
-   */
-  protected void processing(Bitmap bmp){
+    String getStatString(){
+                                 return "";
+                                           }
 
-  }
+    void close(){
 
-  /*Bitmaps queue*/
-  protected  Queue<Bitmap> bmpQueue;
+    }
 
-  protected  Thread threadDectection;
+    public void setNumThreads(int num_threads){
 
-  protected Boolean isRequestStop = false;
+    }
 
-  protected final Object lockResult = new Object();
+    public void setUseNNAPI(boolean isChecked){
 
-  protected int width, height;
+    }
 
-  public boolean IsProcessing = false;
+    /**
+    * Add bitmap to queue, to be used for cnn inference
+    *
+    * @param bmp The bitmap to be add to queue.
+    */
+    public void setBitmap(Bitmap bmp){
+        synchronized (bmpQueue){
+            IsProcessing = true;
+            bmpQueue.add(bmp);
+        }
+    }
+
+    /**
+    * Get bitmap from queue
+    *
+    * @param bmp The bitmap to be taken from queue.
+    */
+    protected boolean getBitmap(Bitmap bmp){
+        boolean ret = false;
+        synchronized (bmpQueue) {
+            if(bmpQueue.size()>0) {
+                Bitmap tmp = bmpQueue.poll();
+                int[] pixels = new int[tmp.getWidth() * tmp.getHeight()];
+                tmp.getPixels(pixels, 0, tmp.getWidth(), 0, 0, tmp.getWidth(), tmp.getHeight());
+                bmp.setPixels(pixels, 0, bmp.getWidth(), 0, 0, bmp.getWidth(), bmp.getHeight());
+                ret = true;
+            } else{
+                ret = false;
+            }
+        }
+        return ret;
+    }
+
+    /**
+    * Request stop worker thread
+    */
+    public void requestStop(){
+        synchronized(isRequestStop){
+            isRequestStop = true;
+        }
+    }
+
+    /**
+    * Check if worker was request to be stopped
+    */
+    public Boolean isStop(){
+        boolean ret;
+        synchronized(isRequestStop) {
+            ret = isRequestStop;
+        }
+        return ret;
+    }
+
+    /**
+    * Start object detection thread
+    */
+    public void startThread(){
+                                    threadDectection.start();
+                                                             }
+
+    /**
+    * Wait for thread exit
+    */
+    public void waitForExit(){
+        try {
+            threadDectection.join();
+        } catch (InterruptedException e){
+
+        }
+    }
+
+    /**
+    * processing the bitmap
+    *
+    * @param bmp The bitmap to be taken for processing.
+    */
+    protected void processing(Bitmap bmp){
+
+    }
+    public List<String> loadLabelsFromAsset(Context context, String assetFilePath) {
+        AssetManager assetManager = context.getAssets();
+        try {
+            InputStream inputStream = assetManager.open(assetFilePath);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                labels.add(line);
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return labels;
+    }
+
+    /*Bitmaps queue*/
+    protected  Queue<Bitmap> bmpQueue;
+
+    protected  Thread threadDectection;
+
+    protected Boolean isRequestStop = false;
+
+    protected final Object lockResult = new Object();
+
+    protected int width, height;
+
+    public boolean IsProcessing = false;
 
 }

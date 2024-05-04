@@ -18,6 +18,7 @@
         android:icon="@drawable/walkeasy"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.WalkEasy"
         tools:targetApi="31">

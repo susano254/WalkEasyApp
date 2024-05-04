@@ -23,6 +23,7 @@ project("WalkEasy")
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
     # List C/C++ source files with relative paths to this CMakeLists.txt.
+    SpatialAudio.cpp
     StereoGlasses.cpp
     native-lib.cpp
 )

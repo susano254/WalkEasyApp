@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.susano.WalkEasy.ESP_Cam.MyWebSocketServer;
 import com.susano.WalkEasy.ESP_Cam.RenderFrame;
+import com.susano.WalkEasy.ObjectDetection.tflite.TFLiteYoloV5;
 import com.susano.WalkEasy.SpatialSound.SpatialSound;
 import com.susano.WalkEasy.databinding.ActivityMainBinding;
 
@@ -23,6 +24,7 @@ import java.net.InetSocketAddress;
 
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
+    private TFLiteYoloV5 detector;
     ImageView imageViewLeft, imageViewRight;
     MyWebSocketServer webSocketServer;
     Thread th;
@@ -47,13 +49,22 @@ public class MainActivity extends AppCompatActivity {
 
         // Comment this two lines if you can't connect the hardware
         // Create and start the WebSocket server on a specific port
-        RenderFrame callBack = new RenderFrame(this, imageViewLeft, imageViewRight);
+        RenderFrame callBack = new RenderFrame(this, imageViewLeft, imageViewRight, detector);
         webSocketServer = new MyWebSocketServer(new InetSocketAddress(8000), callBack);
         webSocketServer.start();
 
+//        try {
+//            detector = new TFLiteYoloV5(getAssets(), "ssd_mobilenet_v1_1_metadata_1.tflite", "ssd_labels.txt", 300, true);
+////            detector = new TFLiteYoloV5(getAssets(), "yolov5s-fp16-320-metadata.tflite", "coco_label.txt", 320);
+//            Log.d("WalkEasy", "Detector created");
+//        } catch (Exception e) {
+//            Log.e("WalkEasy", "Error creating detector", e);
+//            e.printStackTrace();
+//        }
+
         OpenCVLoader.initLocal();
 
-        init();
+//        main();
     }
 
     @Override
@@ -72,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
      * A native method that is implemented by the 'opencl' native library,
      * which is packaged with this application.
      */
-    public native String init();
+    public native String main();
 
 
 }
