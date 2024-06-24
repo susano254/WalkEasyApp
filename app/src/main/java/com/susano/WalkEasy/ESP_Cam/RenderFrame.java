@@ -38,11 +38,11 @@ public class RenderFrame implements RenderFrameInterface {
             Utils.bitmapToMat(bitmap, mat);
             updateImage(mat.getNativeObjAddr(), path);
 
-            Log.d("MyServer", " message width: " + bitmap.getWidth()  + " message height: " + bitmap.getHeight());
+//            Log.d("MyServer", " message width: " + bitmap.getWidth()  + " message height: " + bitmap.getHeight());
 
             // display and apply object detection if needed on both the left and right images
             if(path.equals("/Left")) {
-                detector.recognizeImage(bitmap);
+//                detector.recognizeImage(bitmap);
                 imageViewLeft.setImageBitmap(bitmap);
             }
             else if(path.equals("/Right")) {

@@ -11,7 +11,7 @@
 
 using namespace cv;
 
-namespace StereoGlasses {
+namespace SG {
 
     class StereoGlasses {
         public:

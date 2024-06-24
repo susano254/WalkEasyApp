@@ -2,11 +2,13 @@
 // Created by mahmoud on 3/24/24.
 //
 
+#include <android/log.h>
 #include "StereoGlasses.h"
 
 
-namespace StereoGlasses {
+namespace SG {
     void StereoGlasses::init() {
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Init running");
         // Use the rotation matrixes for stereo rectification and camera intrinsics for undistorting the image
         // Compute the rectification map (mapping between the original image pixels and
         // their transformed values after applying rectification and undistortion) for left and right camera frames
@@ -56,22 +58,39 @@ namespace StereoGlasses {
         Mat rect_r = Mat (3, 3, CV_32FC1, rect_r_arr);
         Mat proj_mat_l = Mat (3, 4, CV_32FC1, proj_mat_l_arr);
         Mat proj_mat_r = Mat (3, 4, CV_32FC1, proj_mat_r_arr);
-        Mat grayL, grayR, rectFrameL, rectFrameR;
+        // Check that matrices are properly initialized
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "new_mtxL: %s", new_mtxL.empty() ? "empty" : "initialized");
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "new_mtxR: %s", new_mtxR.empty() ? "empty" : "initialized");
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "distL: %s", distL.empty() ? "empty" : "initialized");
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "distR: %s", distR.empty() ? "empty" : "initialized");
 
-        cv::initUndistortRectifyMap(new_mtxL, distL, rect_l, proj_mat_l, grayL.size(), CV_16SC2, Left_Stereo_Map1, Left_Stereo_Map2);
-        cv::initUndistortRectifyMap(new_mtxR, distR, rect_r, proj_mat_r, grayR.size(), CV_16SC2, Right_Stereo_Map1, Right_Stereo_Map2);
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Rectifying StereoGlasses");
+        cv::initUndistortRectifyMap(new_mtxL, distL, rect_l, proj_mat_l, Size(640, 480), CV_16SC2, Left_Stereo_Map1, Left_Stereo_Map2);
+        cv::initUndistortRectifyMap(new_mtxR, distR, rect_r, proj_mat_r, Size(640, 480), CV_16SC2, Right_Stereo_Map1, Right_Stereo_Map2);
+
+
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Left Stereo Map 1: %d", Left_Stereo_Map1.rows);
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Left Stereo Map 2: %d", Left_Stereo_Map2.rows);
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Finished Init StereoGlasses");
     }
 
     void StereoGlasses::run() {
         Mat grayL, grayR, rectFrameL, rectFrameR;
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Running StereoGlasses");
         while(true) {
             if (!frameLeft.empty() && !frameRight.empty()) {
                 cvtColor(frameLeft, grayL, COLOR_BGR2GRAY);
                 cvtColor(frameRight, grayR, COLOR_BGR2GRAY);
 
+                __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Remapping StereoGlasses");
                 cv::remap(grayL, rectFrameL, Left_Stereo_Map1, Left_Stereo_Map2, INTER_LINEAR);
                 cv::remap(grayR, rectFrameR, Right_Stereo_Map1, Right_Stereo_Map2, INTER_LINEAR);
+                __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Generating Depth Map");
                 getDepthMap(rectFrameL, rectFrameR);
+
+                // empty the frames
+                frameLeft.release();
+                frameRight.release();
             }
         }
 

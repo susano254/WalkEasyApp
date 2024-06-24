@@ -32,26 +32,34 @@ ALuint SpatialAudio::generateTone(float frequency) {
 
     float inc_freq = 0.0f;
     for (int i = 0; i < size; i++) {
+        // size => 1/frequendcy
+        // size => wavelength
         data[i] = (int16_t)(32767.0 * sin(2 * M_PI * frequency * i / sampleRate));
-        frequency += inc_freq;
 
-        if(frequency < 100 || frequency > 5000)
-            inc_freq = -inc_freq;
+//        //optional
+//        frequency += inc_freq;
+//        if(frequency < 100 || frequency > 5000)
+//            inc_freq = -inc_freq;
     }
 
     ALuint sourceId;
     ALuint buffer;
-    alGenBuffers(1, &buffer);
 
+    //register the buffer with OpenAL
+    alGenBuffers(1, &buffer);
+    // fill the buffer with the audio data
     alBufferData(buffer, AL_FORMAT_MONO16, data, size, sampleRate);
+
+    // set hte listener position
     alListener3f(AL_POSITION, 0, 0, 0);
     alListener3f(AL_VELOCITY, 0, 0, 0);
+
+    //register one source with OpenAL
     alGenSources(1, &sourceId);
     alSourcef(sourceId, AL_GAIN, 1);
     alSourcef(sourceId, AL_PITCH, 1);
-    // set the direction to be totally on the left
-    alSource3f(sourceId, AL_POSITION, 0, y, 0);
-    alSource3f(sourceId, AL_VELOCITY, 0, 0, 0);
+
+    // attach the buffer to the source
     alSourcei(sourceId, AL_BUFFER, buffer);
     alSourcei(sourceId, AL_LOOPING, AL_TRUE);
 

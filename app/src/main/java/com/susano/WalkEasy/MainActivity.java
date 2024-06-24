@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         OpenCVLoader.initLocal();
 
-//        main();
+        main();
     }
 
     @Override
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
      * A native method that is implemented by the 'opencl' native library,
      * which is packaged with this application.
      */
-    public native String main();
+    public native void main();
 
 
 }

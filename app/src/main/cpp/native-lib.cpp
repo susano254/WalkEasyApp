@@ -11,8 +11,20 @@
 #include <AL/al.h>
 #include "AL/alc.h"
 #include "SpatialAudio.h"
+#include "StereoGlasses.h"
 
 using namespace cv;
+using namespace SG;
+
+StereoGlasses stereoGlasses;
+
+void *run(void *arg) {
+    __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Thread started");
+    stereoGlasses.init();
+    stereoGlasses.run();
+
+    pthread_exit(NULL);
+}
 
 void testOpenCL(){
     cl_int CL_err = CL_SUCCESS;
@@ -119,15 +131,18 @@ void testOpenCV(){
     __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "block size: %d",  bm->getBlockSize());
 }
 
-extern "C" JNIEXPORT jstring
+
+extern "C" JNIEXPORT void
 Java_com_susano_WalkEasy_MainActivity_main( JNIEnv *env, jobject /* this */) {
-    SpatialAudio spatialAudio;
+//    SpatialAudio spatialAudio;
 
     testOpenCL();
-
     testOpenCV();
-    std::string hello = "Hello from C++";
-    return env->NewStringUTF(hello.c_str());
+
+    // create a thread to run the stereoGlasses
+    pthread_t thread;
+    pthread_create(&thread, NULL, run, NULL);
+
 }
 
 
@@ -137,6 +152,13 @@ Java_com_susano_WalkEasy_ESP_1Cam_RenderFrame_updateImage(JNIEnv *env, jobject t
                                                           jstring path) {
     Mat img = *(Mat*)mat_addr;
     const char *nativeString = env->GetStringUTFChars(path, 0);
-    __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "rows: %d", img.rows);
-    __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "path: %s", nativeString);
+
+    if(strcmp(nativeString, "/Left") == 0){
+        img.copyTo(stereoGlasses.frameLeft);
+    }
+    else if(strcmp(nativeString, "/Right") == 0){
+        img.copyTo(stereoGlasses.frameRight);
+    }
+//    __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "rows: %d", img.rows);
+//    __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "path: %s", nativeString);
 }
