@@ -20,6 +20,7 @@ namespace SG {
         Mat Right_Stereo_Map1, Right_Stereo_Map2;
         double fx, fy, cx, cy, b;
 
+        pthread_mutex_t mutex;
 
         int k = 17;
         int blockSize = 9;
@@ -29,6 +30,7 @@ namespace SG {
         int disparityFactor = 9;
         int numDisparities = 16*disparityFactor - minDisparity;
         Mat left_disp, right_disp, disparity, filteredDisparity, coloredDisparity;
+        Mat result;
 
         Ptr<StereoBM> leftMatcher = StereoBM::create(numDisparities, blockSize);
         Ptr<StereoMatcher>rightMatcher = ximgproc::createRightMatcher(leftMatcher);

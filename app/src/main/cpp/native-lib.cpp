@@ -142,23 +142,33 @@ Java_com_susano_WalkEasy_MainActivity_main( JNIEnv *env, jobject /* this */) {
     // create a thread to run the stereoGlasses
     pthread_t thread;
     pthread_create(&thread, NULL, run, NULL);
-
 }
 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_susano_WalkEasy_ESP_1Cam_RenderFrame_updateImage(JNIEnv *env, jobject thiz, jlong mat_addr,
-                                                          jstring path) {
+Java_com_susano_WalkEasy_ESP_1Cam_RenderFrame_updateImage(JNIEnv *env, jobject thiz, jlong mat_addr, jstring path) {
     Mat img = *(Mat*)mat_addr;
     const char *nativeString = env->GetStringUTFChars(path, 0);
 
     if(strcmp(nativeString, "/Left") == 0){
         img.copyTo(stereoGlasses.frameLeft);
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "frameLeft %d", stereoGlasses.frameLeft.rows);
     }
     else if(strcmp(nativeString, "/Right") == 0){
         img.copyTo(stereoGlasses.frameRight);
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "frameRight %d", stereoGlasses.frameRight.rows);
     }
 //    __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "rows: %d", img.rows);
 //    __android_log_print(ANDROID_LOG_INFO, "OpenCLPlatformInfo", "path: %s", nativeString);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_susano_WalkEasy_ESP_1Cam_RenderFrame_getDepthMap(JNIEnv *env, jobject thiz, jlong mat_addr) {
+        Mat depthMap = *(Mat*)mat_addr;
+//        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "mat_addr: %u depthMap %u", mat_addr, &depthMap);
+        pthread_mutex_lock(&stereoGlasses.mutex);
+        stereoGlasses.filteredDisparity.copyTo(*(Mat *) mat_addr);
+        pthread_mutex_unlock(&stereoGlasses.mutex);
+//        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "depthMap %u: %d", &depthMap, depthMap.rows);
 }

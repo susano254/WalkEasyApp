@@ -58,6 +58,9 @@ namespace SG {
         Mat rect_r = Mat (3, 3, CV_32FC1, rect_r_arr);
         Mat proj_mat_l = Mat (3, 4, CV_32FC1, proj_mat_l_arr);
         Mat proj_mat_r = Mat (3, 4, CV_32FC1, proj_mat_r_arr);
+        //init the mutex
+        pthread_mutex_init(&mutex, NULL);
+
         // Check that matrices are properly initialized
         __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "new_mtxL: %s", new_mtxL.empty() ? "empty" : "initialized");
         __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "new_mtxR: %s", new_mtxR.empty() ? "empty" : "initialized");
@@ -100,12 +103,19 @@ namespace SG {
         leftMatcher->compute(left, right, left_disp);
         rightMatcher->compute(left, right, right_disp);
 
-        left_disp.convertTo(left_disp, CV_32F, 1/16.0);
-        right_disp.convertTo(right_disp, CV_32F, 1/16.0);
         left_disp = left_disp / numDisparities;
         right_disp = right_disp / numDisparities;
+        left_disp.convertTo(left_disp, CV_32F, 1/16.0);
+        right_disp.convertTo(right_disp, CV_32F, 1/16.0);
 
 
-        wlsFilter->filter(left_disp, left, filteredDisparity, right_disp, Rect(), right);
+        pthread_mutex_lock(&mutex);
+//        wlsFilter->filter(left_disp, left, filteredDisparity, right_disp, Rect(), right);
+        left_disp.copyTo(filteredDisparity);
+        filteredDisparity.convertTo(filteredDisparity, CV_8UC1, 255.0);
+        pthread_mutex_unlock(&mutex);
+
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "filteredDisparity: %d", filteredDisparity.rows);
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Finished Depth Map");
     }
 } // StereoGlasses

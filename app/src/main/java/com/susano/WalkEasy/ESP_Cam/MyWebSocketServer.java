@@ -50,7 +50,7 @@ public class MyWebSocketServer extends WebSocketServer {
 //        Log.d("MyServer", "\n\nConnection Path is: " + conn.getResourceDescriptor());
 //        Log.d("MyServer", "Received message from " + conn.getRemoteSocketAddress() + " message length: " + message.capacity());
 
-        callBack.render(message, conn.getResourceDescriptor());
+        callBack.process(message, conn.getResourceDescriptor());
     }
 
     @Override

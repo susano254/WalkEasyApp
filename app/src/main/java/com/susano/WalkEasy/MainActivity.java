@@ -25,7 +25,7 @@ import java.net.InetSocketAddress;
 public class MainActivity extends AppCompatActivity {
     private ActivityMainBinding binding;
     private TFLiteYoloV5 detector;
-    ImageView imageViewLeft, imageViewRight;
+    ImageView imageViewLeft, imageViewRight, imageViewDepth;
     MyWebSocketServer webSocketServer;
     Thread th;
 
@@ -44,12 +44,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        imageViewLeft = findViewById(R.id.textureView1);
-        imageViewRight = findViewById(R.id.textureView2);
+        imageViewLeft = findViewById(R.id.imageLeft);
+        imageViewRight = findViewById(R.id.imageRight);
+        imageViewDepth = findViewById(R.id.depthMap);
 
         // Comment this two lines if you can't connect the hardware
         // Create and start the WebSocket server on a specific port
-        RenderFrame callBack = new RenderFrame(this, imageViewLeft, imageViewRight, detector);
+        RenderFrame callBack = new RenderFrame(this, imageViewLeft, imageViewRight, imageViewDepth, detector);
         webSocketServer = new MyWebSocketServer(new InetSocketAddress(8000), callBack);
         webSocketServer.start();
 
