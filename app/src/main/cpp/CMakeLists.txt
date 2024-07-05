@@ -29,17 +29,17 @@ add_library(${CMAKE_PROJECT_NAME} SHARED
 )
 
 
-add_library(OpenCL SHARED IMPORTED)
-if (EXISTS ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libGLES_mali.so)
-    set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libGLES_mali.so)
-elseif (EXISTS ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libOpenCL.so)
-    set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libOpenCL.so)
-elseif (EXISTS ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libPVROCL.so)
-    set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libPVROCL.so)
-else()
-    message(FATAL_ERROR "None of the required OpenCL libraries found.")
-endif()
-
+#add_library(OpenCL SHARED IMPORTED)
+#if (EXISTS ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libGLES_mali.so)
+#    set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libGLES_mali.so)
+#elseif (EXISTS ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libOpenCL.so)
+#    set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libOpenCL.so)
+#elseif (EXISTS ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libPVROCL.so)
+#    set_target_properties(OpenCL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libPVROCL.so)
+#else()
+#    message(FATAL_ERROR "None of the required OpenCL libraries found.")
+#endif()
+#
 add_library(OpenAL SHARED IMPORTED)
 set_target_properties(OpenAL PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/../jniLibs/${ANDROID_ABI}/libopenal.so)
 
@@ -62,7 +62,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     # List libraries link to the target library
     android
     log
-    OpenCL
+#    OpenCL
     OpenAL
     ${OpenCV_LIBRARIES}
 )

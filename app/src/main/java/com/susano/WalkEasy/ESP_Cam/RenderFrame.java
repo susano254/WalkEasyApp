@@ -20,7 +20,7 @@ public class RenderFrame implements RenderFrameInterface {
     TFLiteYoloV5 detector;
     ImageView imageViewLeft, imageViewRight, imageViewDepth;
 
-    public RenderFrame(Activity context, ImageView imageViewLeft, ImageView imageViewDepth, ImageView imageViewRight, TFLiteYoloV5 detector){
+    public RenderFrame(Activity context, ImageView imageViewLeft, ImageView imageViewRight, ImageView imageViewDepth, TFLiteYoloV5 detector){
         this.context = context;
         this.detector = detector;
         this.imageViewLeft = imageViewLeft;

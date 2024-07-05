@@ -4,7 +4,10 @@
 
 #include <android/log.h>
 #include "StereoGlasses.h"
+#include "SpatialAudio.h"
 
+SpatialAudio spatialAudio;
+ALuint sourceId;
 
 namespace SG {
     void StereoGlasses::init() {
@@ -71,6 +74,14 @@ namespace SG {
         cv::initUndistortRectifyMap(new_mtxL, distL, rect_l, proj_mat_l, Size(640, 480), CV_16SC2, Left_Stereo_Map1, Left_Stereo_Map2);
         cv::initUndistortRectifyMap(new_mtxR, distR, rect_r, proj_mat_r, Size(640, 480), CV_16SC2, Right_Stereo_Map1, Right_Stereo_Map2);
 
+        fx = new_mtxL.at<float>(0, 0);
+        fy = new_mtxL.at<float>(1, 1);
+        cx = new_mtxL.at<float>(0, 2);
+        cy = new_mtxL.at<float>(1, 2);
+        b = 10.29;
+
+        sourceId = spatialAudio.generateTone(4000);
+        spatialAudio.playSound(sourceId);
 
         __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Left Stereo Map 1: %d", Left_Stereo_Map1.rows);
         __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Left Stereo Map 2: %d", Left_Stereo_Map2.rows);
@@ -91,9 +102,9 @@ namespace SG {
                 __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Generating Depth Map");
                 getDepthMap(rectFrameL, rectFrameR);
 
-                // empty the frames
-                frameLeft.release();
-                frameRight.release();
+//                // empty the frames
+//                frameLeft.release();
+//                frameRight.release();
             }
         }
 
@@ -103,16 +114,36 @@ namespace SG {
         leftMatcher->compute(left, right, left_disp);
         rightMatcher->compute(left, right, right_disp);
 
-        left_disp = left_disp / numDisparities;
-        right_disp = right_disp / numDisparities;
+//        left_disp = left_disp / numDisparities;
+//        right_disp = right_disp / numDisparities;
         left_disp.convertTo(left_disp, CV_32F, 1/16.0);
         right_disp.convertTo(right_disp, CV_32F, 1/16.0);
 
 
         pthread_mutex_lock(&mutex);
-//        wlsFilter->filter(left_disp, left, filteredDisparity, right_disp, Rect(), right);
-        left_disp.copyTo(filteredDisparity);
+        wlsFilter->filter(left_disp/(numDisparities-minDisparity), left, filteredDisparity, right_disp/(numDisparities-minDisparity), Rect(), right);
+        int cropWidth = numDisparities;
+        cv::Rect roi(cropWidth, 0, filteredDisparity.cols - cropWidth, filteredDisparity.rows);
+        filteredDisparity = filteredDisparity(roi);
+
+        int u = filteredDisparity.rows / 2;
+        int v = filteredDisparity.cols / 2;
+        float disparityVal = filteredDisparity.at<float>(u, v);
+        disparityVal = disparityVal * 16.0;
+        disparityVal = disparityVal * (numDisparities-minDisparity);
+//        cout << "Disparity: " << disparityVal << endl;
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Disparity: %f", disparityVal);
+//        cout << "u: " << u << " v: " << v << " depth: " << (fx*b)/disparityVal << endl;
+        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "u: %d v: %d depth: %f", u, v, (fx*b)/disparityVal);
+        // cout << "fx: " << fx << " b: " << b << " Depth: " << (fx * b) / disparityVal << endl;
+        float x = (u - cx) / fx;
+        float y = (v - cy) / fy;
+        float depth = fx * b / disparityVal;
+        alSource3f(sourceId, AL_POSITION, x, y, depth);
+//        left_disp.copyTo(filteredDisparity);
         filteredDisparity.convertTo(filteredDisparity, CV_8UC1, 255.0);
+        // draw circle at the center of the image
+        circle(filteredDisparity, Point(u, v), 5, Scalar(0, 0, 0), 2);
         pthread_mutex_unlock(&mutex);
 
         __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "filteredDisparity: %d", filteredDisparity.rows);
