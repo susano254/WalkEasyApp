@@ -1,5 +1,7 @@
 package com.susano.WalkEasy.ESP_Cam;
 
+import static org.opencv.core.CvType.CV_8UC1;
+
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -19,6 +21,8 @@ public class RenderFrame implements RenderFrameInterface {
     Activity context;
     TFLiteYoloV5 detector;
     ImageView imageViewLeft, imageViewRight, imageViewDepth;
+    long prevTime = 0;
+    private static final long INTERVAL = 70 ; // 7fps
 
     public RenderFrame(Activity context, ImageView imageViewLeft, ImageView imageViewRight, ImageView imageViewDepth, TFLiteYoloV5 detector){
         this.context = context;
@@ -29,7 +33,12 @@ public class RenderFrame implements RenderFrameInterface {
     }
     @Override
     public void process(ByteBuffer frame, String path) {
-        context.runOnUiThread(() -> {
+        long currentTime = System.currentTimeMillis();
+        if(currentTime - prevTime < INTERVAL) {
+            return;
+        }
+//        context.runOnUiThread(() -> {
+        new Thread(() -> {
             byte[] jpegData = frame.array();
             Bitmap bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.length);
 
@@ -41,9 +50,13 @@ public class RenderFrame implements RenderFrameInterface {
 
             Mat depthMap = new Mat();
             getDepthMap(depthMap.getNativeObjAddr());
-//            Log.d("StereoGlassesInfo", "DepthMap address: " + depthMap.getNativeObjAddr() + " DepthMap rows are: " + depthMap.rows());
-            renderDepth(depthMap);
-        });
+            prevTime = currentTime;
+//            this.depthMap = depthMap;
+////            Log.d("StereoGlassesInfo", "DepthMap address: " + depthMap.getNativeObjAddr() + " DepthMap rows are: " + depthMap.rows());
+            context.runOnUiThread(() -> {
+                renderDepth(depthMap);
+            });
+        }).start();
     }
 
     @Override

@@ -5,11 +5,18 @@
 #include <android/log.h>
 #include "StereoGlasses.h"
 #include "SpatialAudio.h"
+#include "AL/alc.h"
 
 SpatialAudio spatialAudio;
 ALuint sourceId;
 
 namespace SG {
+    float StereoGlasses::scaleDepth(float depth, float minDepth, float maxDepth) {
+        float scaledDepth = log(depth);
+        float minLog = log(minDepth);
+        float maxLog = log(maxDepth);
+        return (scaledDepth - minLog) / (maxLog - minLog);
+    }
     void StereoGlasses::init() {
         __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Init running");
         // Use the rotation matrixes for stereo rectification and camera intrinsics for undistorting the image
@@ -91,7 +98,7 @@ namespace SG {
     void StereoGlasses::run() {
         Mat grayL, grayR, rectFrameL, rectFrameR;
         __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Running StereoGlasses");
-        while(true) {
+        while(running) {
             if (!frameLeft.empty() && !frameRight.empty()) {
                 cvtColor(frameLeft, grayL, COLOR_BGR2GRAY);
                 cvtColor(frameRight, grayR, COLOR_BGR2GRAY);
@@ -107,6 +114,15 @@ namespace SG {
 //                frameRight.release();
             }
         }
+
+        // turn off the source
+        alSourceStop(sourceId);
+        alDeleteSources(1, &sourceId);
+//        alDeleteBuffers(1, &spatialAudio.buffer);
+        // close the OpenAL context
+        ALCcontext *alContext = alcGetCurrentContext();
+        ALCdevice *device = alcGetContextsDevice(alContext);
+        alcMakeContextCurrent(NULL);
 
     }
 
@@ -139,7 +155,8 @@ namespace SG {
         float x = (u - cx) / fx;
         float y = (v - cy) / fy;
         float depth = fx * b / disparityVal;
-        alSource3f(sourceId, AL_POSITION, x, y, depth);
+        depth = scaleDepth(fx*b/disparityVal, 3.0, 20.0) * 20;
+        alSource3f(sourceId, AL_POSITION, x*depth, y*depth, depth);
 //        left_disp.copyTo(filteredDisparity);
         filteredDisparity.convertTo(filteredDisparity, CV_8UC1, 255.0);
         // draw circle at the center of the image

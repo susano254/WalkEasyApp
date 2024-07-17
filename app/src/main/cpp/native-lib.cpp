@@ -17,6 +17,7 @@ using namespace cv;
 using namespace SG;
 
 StereoGlasses stereoGlasses;
+pthread_t thread;
 
 void *run(void *arg) {
     __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "Thread started");
@@ -140,7 +141,6 @@ Java_com_susano_WalkEasy_MainActivity_main( JNIEnv *env, jobject /* this */) {
     testOpenCV();
 
     // create a thread to run the stereoGlasses
-    pthread_t thread;
     pthread_create(&thread, NULL, run, NULL);
 }
 
@@ -171,4 +171,15 @@ Java_com_susano_WalkEasy_ESP_1Cam_RenderFrame_getDepthMap(JNIEnv *env, jobject t
         stereoGlasses.filteredDisparity.copyTo(*(Mat *) mat_addr);
         pthread_mutex_unlock(&stereoGlasses.mutex);
 //        __android_log_print(ANDROID_LOG_INFO, "StereoGlassesInfo", "depthMap %u: %d", &depthMap, depthMap.rows);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_susano_WalkEasy_MainActivity_exit(JNIEnv *env, jobject thiz) {
+
+
+    __android_log_print(ANDROID_LOG_INFO, "MyServer", "Exiting StereoGlasses");
+    stereoGlasses.running = false;
+    pthread_join(thread, NULL);
+    __android_log_print(ANDROID_LOG_INFO, "MyServer", "Thread finished");
+    return;
 }

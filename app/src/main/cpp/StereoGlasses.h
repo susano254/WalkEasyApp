@@ -19,11 +19,12 @@ namespace SG {
         Mat Left_Stereo_Map1, Left_Stereo_Map2;
         Mat Right_Stereo_Map1, Right_Stereo_Map2;
         double fx, fy, cx, cy, b;
+        bool running = true;
 
         pthread_mutex_t mutex;
 
         int k = 17;
-        int blockSize = 9;
+        int blockSize = 17;
         int P1 = 8*9*blockSize*blockSize; //*blockSize;
         int P2 = 32*9*blockSize*blockSize; //*blockSize;
         int minDisparity = 0;
@@ -40,11 +41,11 @@ namespace SG {
             leftMatcher->setBlockSize(blockSize);
             leftMatcher->setNumDisparities(numDisparities);
             leftMatcher->setMinDisparity(minDisparity);
-            leftMatcher->setDisp12MaxDiff(1);
-            leftMatcher->setPreFilterCap(63);
-            leftMatcher->setUniquenessRatio(0);
-            leftMatcher->setSpeckleWindowSize(0);
-            leftMatcher->setSpeckleRange(32);
+//            leftMatcher->setDisp12MaxDiff(1);
+//            leftMatcher->setPreFilterCap(63);
+//            leftMatcher->setUniquenessRatio(0);
+//            leftMatcher->setSpeckleWindowSize(0);
+//            leftMatcher->setSpeckleRange(32);
 
 
 
@@ -55,10 +56,14 @@ namespace SG {
             rightMatcher->setDisp12MaxDiff(1);
             rightMatcher->setSpeckleWindowSize(9);
             rightMatcher->setSpeckleRange(32);
+
+            wlsFilter->setLambda(10000.0);
+            wlsFilter->setSigmaColor(0.8);
         }
 
         void init();
         void getDepthMap(Mat left, Mat right);
+        float scaleDepth(float depth, float minDepth, float maxDepth);
         void run();
 
 

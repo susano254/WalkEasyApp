@@ -3,6 +3,7 @@ package com.susano.WalkEasy;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -51,8 +52,10 @@ public class MainActivity extends AppCompatActivity {
         // Comment this two lines if you can't connect the hardware
         // Create and start the WebSocket server on a specific port
         RenderFrame callBack = new RenderFrame(this, imageViewLeft, imageViewRight, imageViewDepth, detector);
+        Log.d("MyServer", "Creating WebSocket server");
         webSocketServer = new MyWebSocketServer(new InetSocketAddress(8000), callBack);
         webSocketServer.start();
+        Log.d("MyServer", "WebSocket server started");
 
 //        try {
 //            detector = new TFLiteYoloV5(getAssets(), "ssd_mobilenet_v1_1_metadata_1.tflite", "ssd_labels.txt", 300, true);
@@ -68,10 +71,25 @@ public class MainActivity extends AppCompatActivity {
         main();
     }
 
+
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onPause() {
+        super.onPause();
         try {
+            Log.d("MyServer", "Stopping WebSocket server");
+            webSocketServer.stop();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+//
+    @Override
+    protected void onStop() {
+        super.onStop();
+        try {
+            Log.d("MyServer", "Stopping WebSocket server");
             webSocketServer.stop();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -80,11 +98,39 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            Log.d("MyServer", "Stopping WebSocket server");
+            webSocketServer.stop();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     /**
      * A native method that is implemented by the 'opencl' native library,
      * which is packaged with this application.
      */
     public native void main();
 
+    public native void exit();
 
+
+    public void exit(View view) {
+        try {
+            exit();
+            Log.d("MyServer", "Stopping WebSocket server");
+            webSocketServer.stop();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        finish();
+    }
 }
